@@ -9,6 +9,7 @@ import {
   Keyboard,
   ImageBackground,
   KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 
 const initialState = {
@@ -16,13 +17,12 @@ const initialState = {
   password: "",
 };
 
-export const LoginScreen = () => {
+export const LoginScreen = ({ navigation }) => {
   const [state, setState] = useState(initialState);
-  //   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const keyboardHide = () => {
-    // setIsShowKeyboard(false);
+    setIsShowKeyboard(false);
     Keyboard.dismiss();
-    console.log(state);
     setState(initialState);
   };
   return (
@@ -31,10 +31,10 @@ export const LoginScreen = () => {
         source={require("../../assets/images/bgphoto.jpg")}
         style={styles.image}
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <View style={styles.container}>
+        <View style={styles.container}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          >
             <View style={styles.form}>
               <View style={styles.header}>
                 <Text style={styles.headerTitle}>Войти</Text>
@@ -44,7 +44,7 @@ export const LoginScreen = () => {
                   style={styles.input}
                   placeholder="Адрес электронной почты"
                   value={state.email}
-                  //   onFocus={() => setIsShowKeyboard(true)}
+                  onFocus={() => setIsShowKeyboard(true)}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, email: value }))
                   }
@@ -56,25 +56,31 @@ export const LoginScreen = () => {
                   placeholder="Пароль"
                   secureTextEntry={true}
                   value={state.password}
-                  //   onFocus={() => setIsShowKeyboard(true)}
+                  onFocus={() => setIsShowKeyboard(true)}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, password: value }))
                   }
                 />
               </View>
-              <TouchableOpacity
-                style={styles.button}
-                activeOpacity={0.9}
-                onPress={keyboardHide}
-              >
-                <Text style={styles.buttonText}>Войти</Text>
-              </TouchableOpacity>
-              <Text style={styles.formText}>
-                Нет аккаунта? Зарегистрироваться
-              </Text>
+              <View>
+                <TouchableOpacity
+                  style={styles.button}
+                  activeOpacity={0.9}
+                  onPress={keyboardHide}
+                >
+                  <Text style={styles.buttonText}>Войти</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("RegistrationScreen")}
+                >
+                  <Text style={styles.formText}>
+                    Нет аккаунта? Зарегистрироваться
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </View>
       </ImageBackground>
     </TouchableWithoutFeedback>
   );
@@ -123,7 +129,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 33,
   },
-  headerTitle: { fontSize: 30, lineHeight: 50 },
+  headerTitle: {
+    fontSize: 30,
+    lineHeight: 50,
+  },
   formText: {
     fontSize: 16,
     lineHeight: 19,

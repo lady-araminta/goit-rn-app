@@ -10,6 +10,7 @@ import {
   ImageBackground,
   KeyboardAvoidingView,
   Dimensions,
+  Platform,
 } from "react-native";
 
 const initialState = {
@@ -18,13 +19,13 @@ const initialState = {
   password: "",
 };
 
-export const RegistrationScreen = () => {
+export const RegistrationScreen = ({ navigation }) => {
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-    console.log(state);
     setState(initialState);
   };
   return (
@@ -33,49 +34,43 @@ export const RegistrationScreen = () => {
         source={require("../../assets/images/bgphoto.jpg")}
         style={styles.image}
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <View style={styles.container}>
+        <View style={styles.container}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          >
             <View style={styles.form}>
               <View style={styles.avatar}></View>
               <View style={styles.header}>
                 <Text style={styles.headerTitle}>Регистрация</Text>
               </View>
-              <View>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Логин"
-                  value={state.login}
-                  onFocus={() => setIsShowKeyboard(true)}
-                  onChangeText={(value) =>
-                    setState((prevState) => ({ ...prevState, login: value }))
-                  }
-                />
-              </View>
-              <View>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Адрес электронной почты"
-                  value={state.email}
-                  onFocus={() => setIsShowKeyboard(true)}
-                  onChangeText={(value) =>
-                    setState((prevState) => ({ ...prevState, email: value }))
-                  }
-                />
-              </View>
-              <View>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Пароль"
-                  secureTextEntry={true}
-                  value={state.password}
-                  onFocus={() => setIsShowKeyboard(true)}
-                  onChangeText={(value) =>
-                    setState((prevState) => ({ ...prevState, password: value }))
-                  }
-                />
-              </View>
+              <TextInput
+                style={styles.input}
+                placeholder="Логин"
+                value={state.login}
+                onFocus={() => setIsShowKeyboard(true)}
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, login: value }))
+                }
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Адрес электронной почты"
+                value={state.email}
+                onFocus={() => setIsShowKeyboard(true)}
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, email: value }))
+                }
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Пароль"
+                secureTextEntry={true}
+                value={state.password}
+                onFocus={() => setIsShowKeyboard(true)}
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, password: value }))
+                }
+              />
               <TouchableOpacity
                 style={styles.button}
                 activeOpacity={0.9}
@@ -83,10 +78,14 @@ export const RegistrationScreen = () => {
               >
                 <Text style={styles.buttonText}>Зарегистрироваться</Text>
               </TouchableOpacity>
-              <Text style={styles.formText}>Уже есть аккаунт? Войти</Text>
             </View>
-          </View>
-        </KeyboardAvoidingView>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("LoginScreen")}
+            >
+              <Text style={styles.formText}>Уже есть аккаунт? Войти</Text>
+            </TouchableOpacity>
+          </KeyboardAvoidingView>
+        </View>
       </ImageBackground>
     </TouchableWithoutFeedback>
   );
@@ -96,9 +95,9 @@ const styles = StyleSheet.create({
   container: {
     position: "relative",
     backgroundColor: "#fff",
-    paddingBottom: 45,
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
+    paddingBottom: 45,
   },
   image: {
     flex: 1,

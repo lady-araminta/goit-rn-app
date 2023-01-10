@@ -3,8 +3,8 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { LoginScreen } from "./screens/auth/LoginScreen";
-import { RegistrationScreen } from "./screens/auth/RegistrationScreen";
+import { NavigationContainer } from "@react-navigation/native";
+import { useRoute } from "./components/Router";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -22,9 +22,11 @@ export default function App() {
     return null;
   }
 
+  const routing = useRoute({});
+
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
-      <RegistrationScreen />
+      <NavigationContainer>{routing}</NavigationContainer>
       <StatusBar style="auto" />
     </View>
   );
