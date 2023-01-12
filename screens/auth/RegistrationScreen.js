@@ -12,6 +12,7 @@ import {
   Dimensions,
   Platform,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 const initialState = {
   login: "",
@@ -39,7 +40,11 @@ export const RegistrationScreen = ({ navigation }) => {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
             <View style={styles.form}>
-              <View style={styles.avatar}></View>
+              <View style={styles.avatar}>
+                <TouchableOpacity style={styles.addAvatarIcon}>
+                  <Ionicons name="md-add" size={24} color="#BDBDBD" />
+                </TouchableOpacity>
+              </View>
               <View style={styles.header}>
                 <Text style={styles.headerTitle}>Регистрация</Text>
               </View>
@@ -158,5 +163,16 @@ const styles = StyleSheet.create({
     height: 120,
     backgroundColor: "#f6f6f6",
     borderRadius: 16,
+  },
+  addAvatarIcon: {
+    position: "absolute",
+    top: 80,
+    left: 108,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    width: 25,
+    height: 25,
+    borderRadius: 25,
   },
 });
