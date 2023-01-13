@@ -11,13 +11,12 @@ const MainTab = createBottomTabNavigator();
 export const Home = () => {
   return (
     <MainTab.Navigator screenOptions={{ tabBarShowLabel: false }}>
-      {/* <MainTab.Screen
+      <MainTab.Screen
         options={{
-          headerShown: false,
           title: "Публикации",
           headerTitleAlign: "center",
           headerRight: () => (
-            <TouchableOpacity>
+            <TouchableOpacity style={{ marginRight: 16 }}>
               <Feather name="log-out" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           ),
@@ -27,7 +26,7 @@ export const Home = () => {
         }}
         name="PostsScreen"
         component={PostsScreen}
-      /> */}
+      />
       <MainTab.Screen
         options={{
           title: "Создать публикацию",
