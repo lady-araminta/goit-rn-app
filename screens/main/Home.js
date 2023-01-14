@@ -8,7 +8,7 @@ import { ProfileScreen } from "./ProfileScreen";
 
 const MainTab = createBottomTabNavigator();
 
-export const Home = () => {
+export const Home = ({ navigation }) => {
   return (
     <MainTab.Navigator screenOptions={{ tabBarShowLabel: false }}>
       <MainTab.Screen
@@ -34,7 +34,10 @@ export const Home = () => {
             <Feather name="plus" size={24} color="rgba(33, 33, 33, 0.8)" />
           ),
           headerLeft: () => (
-            <TouchableOpacity>
+            <TouchableOpacity
+              style={{ marginLeft: 16 }}
+              onPress={() => navigation.navigate("PostsScreen")}
+            >
               <Feather
                 name="arrow-left"
                 size={24}
@@ -42,9 +45,6 @@ export const Home = () => {
               />
             </TouchableOpacity>
           ),
-          headerLeftContainerStyle: {
-            marginLeft: 16,
-          },
           headerTitleAlign: "center",
         }}
         name="CreatePostScreen"

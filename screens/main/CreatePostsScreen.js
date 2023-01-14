@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   Image,
@@ -12,6 +12,7 @@ import {
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as ImagePicker from "expo-image-picker";
+import * as Location from "expo-location";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 
@@ -22,6 +23,25 @@ export const CreatePostScreen = ({ navigation }) => {
     MediaLibrary.usePermissions();
   const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+    })();
+  }, []);
+
+  let text = "Waiting..";
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
 
   if (!permission) {
     return <View />;
@@ -61,12 +81,22 @@ export const CreatePostScreen = ({ navigation }) => {
 
   const takePhoto = async () => {
     const { uri } = await camera.takePictureAsync();
+    const location = await Location.getCurrentPositionAsync();
+    console.log("latitude", location.coords.latitude);
+    console.log("longitude", location.coords.longitude);
     setPhoto(uri);
+    console.log(photo);
     await MediaLibrary.createAssetAsync(uri);
   };
 
   const sendPhoto = () => {
-    navigation.navigate("PostsScreen", { photo });
+    // const location = await Location.getCurrentPositionAsync();
+    // setLocation(location);
+    navigation.navigate("DefaultScreen", { photo });
+  };
+
+  const deletePhoto = () => {
+    setPhoto(null);
   };
 
   const pickImage = async () => {
@@ -74,12 +104,9 @@ export const CreatePostScreen = ({ navigation }) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [16, 9],
       quality: 1,
     });
-
-    console.log(result);
-
     if (!result.canceled) {
       setPhoto(result.assets[0].uri);
     }
@@ -120,7 +147,7 @@ export const CreatePostScreen = ({ navigation }) => {
         <Text style={styles.text}>Опубликовать</Text>
       </TouchableOpacity>
       <View style={styles.trashBtnCont}>
-        <TouchableOpacity style={styles.trashBtn}>
+        <TouchableOpacity style={styles.trashBtn} onPress={deletePhoto}>
           <Feather name="trash-2" size={24} color="#BDBDBD" />
         </TouchableOpacity>
       </View>
