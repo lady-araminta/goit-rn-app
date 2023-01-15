@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -14,18 +14,26 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
+import { register } from "../../redux/auth/authOperations";
+import { useDispatch } from "react-redux";
+
 const initialState = {
-  login: "",
   email: "",
   password: "",
+  login: "",
 };
 
 export const RegistrationScreen = ({ navigation }) => {
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const dispatch = useDispatch();
+
+  useEffect(() => {}, [dispatch]);
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
+    console.log(state);
+    dispatch(register(state));
     Keyboard.dismiss();
     setState(initialState);
   };

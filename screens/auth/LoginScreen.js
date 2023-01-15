@@ -11,6 +11,9 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { useDispatch } from "react-redux";
+
+import { login } from "../../redux/auth/authOperations";
 
 const initialState = {
   email: "",
@@ -20,8 +23,11 @@ const initialState = {
 export const LoginScreen = ({ navigation }) => {
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const dispatch = useDispatch();
   const keyboardHide = () => {
     setIsShowKeyboard(false);
+    console.log(state);
+    dispatch(login(state));
     Keyboard.dismiss();
     setState(initialState);
   };
