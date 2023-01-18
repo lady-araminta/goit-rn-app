@@ -12,10 +12,13 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import { logout } from "../../redux/auth/authOperations";
+import { useDispatch } from "react-redux";
 
 export const ProfileScreen = () => {
-  const onLongPress = () => {
-    alert("Long press activated!");
+  const dispatch = useDispatch();
+  const userLogout = () => {
+    dispatch(logout());
   };
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -33,10 +36,7 @@ export const ProfileScreen = () => {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity
-              style={styles.logOutIcon}
-              onLongPress={onLongPress}
-            >
+            <TouchableOpacity style={styles.logOutIcon} onPress={userLogout}>
               <Feather name="log-out" size={24} color="#BDBDBD" />
             </TouchableOpacity>
             <View style={styles.header}>

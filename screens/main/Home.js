@@ -5,10 +5,14 @@ import { Feather } from "@expo/vector-icons";
 import { PostsScreen } from "./PostsScreen";
 import { CreatePostScreen } from "./CreatePostsScreen";
 import { ProfileScreen } from "./ProfileScreen";
+import { logout } from "../../redux/auth/authOperations";
+import { useDispatch } from "react-redux";
 
 const MainTab = createBottomTabNavigator();
 
 export const Home = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const userLogout = dispatch(logout());
   return (
     <MainTab.Navigator screenOptions={{ tabBarShowLabel: false }}>
       <MainTab.Screen
@@ -16,7 +20,7 @@ export const Home = ({ navigation }) => {
           title: "Публикации",
           headerTitleAlign: "center",
           headerRight: () => (
-            <TouchableOpacity style={{ marginRight: 16 }}>
+            <TouchableOpacity style={{ marginRight: 16 }} onPress={userLogout}>
               <Feather name="log-out" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           ),

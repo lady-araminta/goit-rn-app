@@ -16,6 +16,11 @@ import * as Location from "expo-location";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 
+import { db, storage } from "../../firebase/config";
+import { addDoc, collection } from "firebase/firestore";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { nanoid } from "@reduxjs/toolkit";
+
 export const CreatePostScreen = ({ navigation }) => {
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
@@ -112,6 +117,35 @@ export const CreatePostScreen = ({ navigation }) => {
     }
   };
 
+  const uploadPostToServer = async () => {
+    try {
+      const photo = uploadPhotoToServer();
+      const postRef = await addDoc(collection(db, "posts"), photo);
+      console.log(postRef);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const uploadPhotoToServer = async () => {
+    try {
+      const metadata = {
+        contentType: "image/jpeg",
+      };
+      const response = await fetch(photo);
+      const file = await response.blob();
+      const postId = nanoid();
+      const storageRef = await ref(storage, `images/${postId}`);
+      const uploadTask = await uploadBytesResumable(storageRef, file, metadata);
+      console.log(uploadTask);
+      const fileRef = ref(storageRef);
+      const dowloadedURL = await getDownloadURL(fileRef);
+      console.log(dowloadedURL);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Camera style={styles.camera} type={type} ref={setCamera}>
@@ -143,7 +177,11 @@ export const CreatePostScreen = ({ navigation }) => {
         />
         <Feather name="map-pin" size={24} color="#BDBDBD" style={styles.icon} />
       </View>
-      <TouchableOpacity style={styles.inactiveBtn} onPress={sendPhoto}>
+      <TouchableOpacity
+        style={styles.inactiveBtn}
+        onPress={sendPhoto}
+        onLongPress={uploadPhotoToServer}
+      >
         <Text style={styles.text}>Опубликовать</Text>
       </TouchableOpacity>
       <View style={styles.trashBtnCont}>
