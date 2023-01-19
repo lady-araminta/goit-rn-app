@@ -12,14 +12,16 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import { logout } from "../../redux/auth/authOperations";
-import { useDispatch } from "react-redux";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase/config";
+// import { logout } from "../../redux/auth/authOperations";
+// import { useDispatch } from "react-redux";
 
 export const ProfileScreen = () => {
-  const dispatch = useDispatch();
-  const userLogout = () => {
-    dispatch(logout());
-  };
+  // const dispatch = useDispatch();
+  // const userLogout = () => {
+  //   dispatch(logout());
+  // };
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <ImageBackground
@@ -36,7 +38,12 @@ export const ProfileScreen = () => {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.logOutIcon} onPress={userLogout}>
+            <TouchableOpacity
+              style={styles.logOutIcon}
+              onPress={() => {
+                signOut(auth);
+              }}
+            >
               <Feather name="log-out" size={24} color="#BDBDBD" />
             </TouchableOpacity>
             <View style={styles.header}>

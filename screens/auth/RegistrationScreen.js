@@ -17,25 +17,23 @@ import { Ionicons } from "@expo/vector-icons";
 import { register } from "../../redux/auth/authOperations";
 import { useDispatch } from "react-redux";
 
-const initialState = {
-  email: "",
-  password: "",
-  login: "",
-};
-
 export const RegistrationScreen = ({ navigation }) => {
-  const [state, setState] = useState(initialState);
+  const [login, setLogin] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {}, [dispatch]);
 
-  const keyboardHide = () => {
+  const submitReg = () => {
+    const userObject = { login, email, password };
+    dispatch(register(userObject));
     setIsShowKeyboard(false);
-    console.log(state);
-    dispatch(register(state));
     Keyboard.dismiss();
-    setState(initialState);
+    setLogin("");
+    setEmail("");
+    setPassword("");
   };
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -59,35 +57,29 @@ export const RegistrationScreen = ({ navigation }) => {
               <TextInput
                 style={styles.input}
                 placeholder="Логин"
-                value={state.login}
+                value={login}
                 onFocus={() => setIsShowKeyboard(true)}
-                onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, login: value }))
-                }
+                onChangeText={(value) => setLogin(value)}
               />
               <TextInput
                 style={styles.input}
                 placeholder="Адрес электронной почты"
-                value={state.email}
+                value={email}
                 onFocus={() => setIsShowKeyboard(true)}
-                onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, email: value }))
-                }
+                onChangeText={(value) => setEmail(value)}
               />
               <TextInput
                 style={styles.input}
                 placeholder="Пароль"
                 secureTextEntry={true}
-                value={state.password}
+                value={password}
                 onFocus={() => setIsShowKeyboard(true)}
-                onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, password: value }))
-                }
+                onChangeText={(value) => setPassword(value)}
               />
               <TouchableOpacity
                 style={styles.button}
                 activeOpacity={0.9}
-                onPress={keyboardHide}
+                onPress={submitReg}
               >
                 <Text style={styles.buttonText}>Зарегистрироваться</Text>
               </TouchableOpacity>

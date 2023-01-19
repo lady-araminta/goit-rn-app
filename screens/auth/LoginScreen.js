@@ -15,21 +15,17 @@ import { useDispatch } from "react-redux";
 
 import { login } from "../../redux/auth/authOperations";
 
-const initialState = {
-  email: "",
-  password: "",
-};
-
 export const LoginScreen = ({ navigation }) => {
-  const [state, setState] = useState(initialState);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const dispatch = useDispatch();
-  const keyboardHide = () => {
+  const submitLog = () => {
+    dispatch(login({ email, password }));
     setIsShowKeyboard(false);
-    console.log(state);
-    dispatch(login(state));
     Keyboard.dismiss();
-    setState(initialState);
+    setEmail("");
+    setPassword("");
   };
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -49,11 +45,9 @@ export const LoginScreen = ({ navigation }) => {
                 <TextInput
                   style={styles.input}
                   placeholder="Адрес электронной почты"
-                  value={state.email}
+                  value={email}
                   onFocus={() => setIsShowKeyboard(true)}
-                  onChangeText={(value) =>
-                    setState((prevState) => ({ ...prevState, email: value }))
-                  }
+                  onChangeText={(value) => setEmail(value)}
                 />
               </View>
               <View>
@@ -61,18 +55,16 @@ export const LoginScreen = ({ navigation }) => {
                   style={styles.input}
                   placeholder="Пароль"
                   secureTextEntry={true}
-                  value={state.password}
+                  value={password}
                   onFocus={() => setIsShowKeyboard(true)}
-                  onChangeText={(value) =>
-                    setState((prevState) => ({ ...prevState, password: value }))
-                  }
+                  onChangeText={(value) => setPassword(value)}
                 />
               </View>
               <View>
                 <TouchableOpacity
                   style={styles.button}
                   activeOpacity={0.9}
-                  onPress={keyboardHide}
+                  onPress={submitLog}
                 >
                   <Text style={styles.buttonText}>Войти</Text>
                 </TouchableOpacity>

@@ -29,6 +29,7 @@ export const CreatePostScreen = ({ navigation }) => {
   const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState(null);
+  const [description, setDescription] = useState("");
   const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
@@ -87,16 +88,12 @@ export const CreatePostScreen = ({ navigation }) => {
   const takePhoto = async () => {
     const { uri } = await camera.takePictureAsync();
     const location = await Location.getCurrentPositionAsync();
-    console.log("latitude", location.coords.latitude);
-    console.log("longitude", location.coords.longitude);
     setPhoto(uri);
-    console.log(photo);
+    setLocation(location.coords);
     await MediaLibrary.createAssetAsync(uri);
   };
 
   const sendPhoto = () => {
-    // const location = await Location.getCurrentPositionAsync();
-    // setLocation(location);
     navigation.navigate("DefaultScreen", { photo });
   };
 
@@ -105,7 +102,6 @@ export const CreatePostScreen = ({ navigation }) => {
   };
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -120,7 +116,13 @@ export const CreatePostScreen = ({ navigation }) => {
   const uploadPostToServer = async () => {
     try {
       const photo = uploadPhotoToServer();
-      const postRef = await addDoc(collection(db, "posts"), photo);
+      const postRef = await addDoc(collection(db, "posts"), {
+        photo,
+        location,
+        login,
+        userId,
+        description,
+      });
       console.log(postRef);
     } catch (error) {
       console.log(error.message);
@@ -169,6 +171,7 @@ export const CreatePostScreen = ({ navigation }) => {
       <TextInput
         style={{ ...styles.input, marginBottom: 16 }}
         placeholder="Название"
+        onChangeText={setDescription}
       />
       <View style={{ position: "relative" }}>
         <TextInput
