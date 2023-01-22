@@ -22,13 +22,16 @@ export const register =
         displayName: name,
       });
       console.log("after update, current user", updateUser);
-      const { uid, displayName } = updateUser;
+      console.log("auth.currentUser", auth.currentUser);
+      const nextCurrentUser = auth.currentUser;
+      console.log("identify", nextCurrentUser.uid);
       dispatch(
         updateUserProfile({
-          userId: uid,
-          name: displayName,
+          userId: updateUser.uid,
+          name: updateUser.displayName,
         })
       );
+      console.log("auth.currentUser after updateUserProfile", auth.currentUser);
       Alert.alert(`Welcome, ${name}`);
     } catch (error) {
       console.log(error.message);

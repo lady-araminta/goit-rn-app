@@ -13,6 +13,6 @@ export const Main = () => {
     dispatch(authStateChangeUser());
   }, [dispatch]);
 
-  const routing = useRoute(null);
+  const routing = useRoute(stateChange);
   return <NavigationContainer>{routing}</NavigationContainer>;
 };

@@ -5,7 +5,7 @@ export const PostItem = ({ item, navigation }) => {
   return (
     <View style={styles.itemContainer}>
       <Image source={{ uri: item.photo }} style={styles.item} />
-      <Text style={styles.title}>Лес</Text>
+      <Text style={styles.title}>{item.description}</Text>
       <View style={styles.descriptionCont}>
         <TouchableOpacity
           style={styles.commentCont}
@@ -29,7 +29,7 @@ export const PostItem = ({ item, navigation }) => {
             color="#BDBDBD"
             style={styles.locationIcon}
           />
-          <Text style={styles.location}>Ukraine</Text>
+          <Text style={styles.location}>{item.place}</Text>
         </TouchableOpacity>
       </View>
     </View>

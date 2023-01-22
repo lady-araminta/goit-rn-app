@@ -1,17 +1,28 @@
+import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { StyleSheet, View, Text, FlatList } from "react-native";
+import { useSelector } from "react-redux";
 import { PostItem } from "../../components/PostItem";
+import { db } from "../../firebase/config";
+import { selectAuthEmail } from "../../redux/auth/authSelectors";
 
-export const DefaultScreen = ({ route, navigation }) => {
+export const DefaultScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
+  const userEmail = useSelector(selectAuthEmail);
+
+  const getAllPosts = async () => {
+    const querySnapshot = await getDocs(collection(db, "posts"));
+    const images = [];
+    querySnapshot.forEach((doc) => {
+      images.push({ ...doc.data(), id: doc.id });
+      setPosts(images);
+    });
+    return images;
+  };
 
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
-
-  console.log(posts);
+    getAllPosts();
+  }, []);
 
   const renderItem = ({ item }) => {
     return <PostItem item={item} navigation={navigation} />;
@@ -23,12 +34,12 @@ export const DefaultScreen = ({ route, navigation }) => {
         <View style={styles.avatar}></View>
         <View style={styles.nameCont}>
           <Text style={styles.name}>Natali Romanova</Text>
-          <Text style={styles.email}>email@example.com</Text>
+          <Text style={styles.email}>{userEmail}</Text>
         </View>
       </View>
       <FlatList
         data={posts}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.id}
         renderItem={renderItem}
       />
     </View>

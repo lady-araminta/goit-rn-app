@@ -11,8 +11,8 @@ import { useDispatch } from "react-redux";
 const MainTab = createBottomTabNavigator();
 
 export const Home = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const userLogout = dispatch(logout());
+  // const dispatch = useDispatch();
+  // const userLogout = dispatch(logout());
   return (
     <MainTab.Navigator screenOptions={{ tabBarShowLabel: false }}>
       <MainTab.Screen
@@ -20,7 +20,7 @@ export const Home = ({ navigation }) => {
           title: "Публикации",
           headerTitleAlign: "center",
           headerRight: () => (
-            <TouchableOpacity style={{ marginRight: 16 }} onPress={userLogout}>
+            <TouchableOpacity style={{ marginRight: 16 }}>
               <Feather name="log-out" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           ),

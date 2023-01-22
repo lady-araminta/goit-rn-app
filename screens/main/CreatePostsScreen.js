@@ -9,7 +9,6 @@ import {
   Dimensions,
   View,
 } from "react-native";
-import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
@@ -20,34 +19,33 @@ import { db, storage } from "../../firebase/config";
 import { addDoc, collection } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { nanoid } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
+import { selectUserId } from "../../redux/auth/authSelectors";
 
 export const CreatePostScreen = ({ navigation }) => {
-  const [type, setType] = useState(CameraType.back);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [permission, requestPermission] = ImagePicker.useCameraPermissions();
   const [libraryPermission, requestLibraryPermission] =
     MediaLibrary.usePermissions();
-  const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState(null);
+  const [place, setPlace] = useState("");
   const [description, setDescription] = useState("");
-  const [errorMsg, setErrorMsg] = useState(null);
+  const userId = useSelector(selectUserId);
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
+        console.log("Permission to access location was denied");
         return;
       }
+      let currentLocation = await Location.getCurrentPositionAsync();
+      setLocation({
+        latitude: currentLocation.coords.latitude,
+        longitude: currentLocation.coords.longitude,
+      });
     })();
   }, []);
-
-  let text = "Waiting..";
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = JSON.stringify(location);
-  }
 
   if (!permission) {
     return <View />;
@@ -79,35 +77,30 @@ export const CreatePostScreen = ({ navigation }) => {
     );
   }
 
-  const toggleCameraType = () => {
-    setType((current) =>
-      current === CameraType.back ? CameraType.front : CameraType.back
-    );
-  };
-
   const takePhoto = async () => {
-    const { uri } = await camera.takePictureAsync();
-    const location = await Location.getCurrentPositionAsync();
-    setPhoto(uri);
-    setLocation(location.coords);
-    await MediaLibrary.createAssetAsync(uri);
+    try {
+      let result = await ImagePicker.launchCameraAsync();
+      if (!result.canceled) {
+        setPhoto(result.assets[0].uri);
+        await MediaLibrary.createAssetAsync(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.log("Помилка в takePhoto", error.message);
+    }
   };
 
   const sendPhoto = () => {
-    navigation.navigate("DefaultScreen", { photo });
-  };
-
-  const deletePhoto = () => {
-    setPhoto(null);
+    uploadPostToServer();
+    clearForm();
+    navigation.navigate("DefaultScreen");
   };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [16, 9],
-      quality: 1,
     });
+
     if (!result.canceled) {
       setPhoto(result.assets[0].uri);
     }
@@ -115,17 +108,17 @@ export const CreatePostScreen = ({ navigation }) => {
 
   const uploadPostToServer = async () => {
     try {
-      const photo = uploadPhotoToServer();
-      const postRef = await addDoc(collection(db, "posts"), {
-        photo,
-        location,
-        login,
-        userId,
-        description,
-      });
-      console.log(postRef);
+      const uploadPhoto = await uploadPhotoToServer();
+      const uploadObject = {
+        photo: uploadPhoto,
+        location: location,
+        place: place,
+        description: description,
+      };
+      console.log(uploadObject);
+      const postRef = await addDoc(collection(db, "posts"), uploadObject);
     } catch (error) {
-      console.log(error.message);
+      console.log("Помилка в uploadPostToServer", error.message);
     }
   };
 
@@ -139,33 +132,35 @@ export const CreatePostScreen = ({ navigation }) => {
       const postId = nanoid();
       const storageRef = await ref(storage, `images/${postId}`);
       const uploadTask = await uploadBytesResumable(storageRef, file, metadata);
-      console.log(uploadTask);
       const fileRef = ref(storageRef);
       const dowloadedURL = await getDownloadURL(fileRef);
-      console.log(dowloadedURL);
+      return dowloadedURL;
     } catch (error) {
-      console.log(error.message);
+      console.log("Помилка в uploadPhotoToServer", error.message);
     }
+  };
+
+  const clearForm = () => {
+    setPhoto(null);
+    setPlace("");
+    setDescription("");
   };
 
   return (
     <View style={styles.container}>
-      <Camera style={styles.camera} type={type} ref={setCamera}>
+      <View style={styles.camera}>
         {photo && (
           <View style={styles.takePhotoContainer}>
             <Image source={{ uri: photo }} style={styles.photo} />
           </View>
         )}
-        <TouchableOpacity
-          style={styles.button}
-          onPress={takePhoto}
-          onLongPress={toggleCameraType}
-        >
+        <TouchableOpacity style={styles.button} onPress={takePhoto}>
           <MaterialIcons name="camera-alt" size={24} color="#BDBDBD" />
         </TouchableOpacity>
-      </Camera>
+      </View>
       <TouchableOpacity onPress={pickImage}>
-        <Text style={styles.text}>Загрузите фото</Text>
+        {photo && <Text style={styles.text}>Редактировать фото</Text>}
+        {!photo && <Text style={styles.text}>Загрузить фото</Text>}
       </TouchableOpacity>
 
       <TextInput
@@ -177,18 +172,15 @@ export const CreatePostScreen = ({ navigation }) => {
         <TextInput
           style={{ ...styles.input, paddingLeft: 28 }}
           placeholder="Местность"
+          onChangeText={setPlace}
         />
         <Feather name="map-pin" size={24} color="#BDBDBD" style={styles.icon} />
       </View>
-      <TouchableOpacity
-        style={styles.inactiveBtn}
-        onPress={sendPhoto}
-        onLongPress={uploadPhotoToServer}
-      >
+      <TouchableOpacity style={styles.inactiveBtn} onPress={sendPhoto}>
         <Text style={styles.text}>Опубликовать</Text>
       </TouchableOpacity>
       <View style={styles.trashBtnCont}>
-        <TouchableOpacity style={styles.trashBtn} onPress={deletePhoto}>
+        <TouchableOpacity style={styles.trashBtn} onPress={clearForm}>
           <Feather name="trash-2" size={24} color="#BDBDBD" />
         </TouchableOpacity>
       </View>
@@ -262,12 +254,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0,
-    // height: 240,
-    // width: Dimensions.get("window").width - 32,
-    flex: 1,
   },
   photo: {
-    height: 80,
-    width: 80,
+    height: 240,
+    width: Dimensions.get("window").width - 32,
   },
 });
