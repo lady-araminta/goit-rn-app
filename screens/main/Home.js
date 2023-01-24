@@ -17,13 +17,7 @@ export const Home = ({ navigation }) => {
     <MainTab.Navigator screenOptions={{ tabBarShowLabel: false }}>
       <MainTab.Screen
         options={{
-          title: "Публикации",
-          headerTitleAlign: "center",
-          headerRight: () => (
-            <TouchableOpacity style={{ marginRight: 16 }}>
-              <Feather name="log-out" size={24} color="#BDBDBD" />
-            </TouchableOpacity>
-          ),
+          headerShown: false,
           tabBarIcon: ({ focused, color, size }) => (
             <Feather name="grid" size={24} color="rgba(33, 33, 33, 0.8)" />
           ),

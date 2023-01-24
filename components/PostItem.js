@@ -21,7 +21,9 @@ export const PostItem = ({ item, navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.locationCont}
-          onPress={() => navigation.navigate("MapScreen")}
+          onPress={() =>
+            navigation.navigate("MapScreen", { location: item.location })
+          }
         >
           <Feather
             name="map-pin"
@@ -29,7 +31,9 @@ export const PostItem = ({ item, navigation }) => {
             color="#BDBDBD"
             style={styles.locationIcon}
           />
-          <Text style={styles.location}>{item.place}</Text>
+          <Text style={styles.location}>
+            {item.place ? item.place : item.city}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

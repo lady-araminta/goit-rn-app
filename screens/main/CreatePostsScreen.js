@@ -29,6 +29,7 @@ export const CreatePostScreen = ({ navigation }) => {
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState(null);
   const [place, setPlace] = useState("");
+  // const [city, setCity] = useState("");
   const [description, setDescription] = useState("");
   const userId = useSelector(selectUserId);
 
@@ -40,10 +41,14 @@ export const CreatePostScreen = ({ navigation }) => {
         return;
       }
       let currentLocation = await Location.getCurrentPositionAsync();
-      setLocation({
+      const coords = {
         latitude: currentLocation.coords.latitude,
         longitude: currentLocation.coords.longitude,
-      });
+      };
+      setLocation(coords);
+      // let address = await Location.reverseGeocodeAsync(coords);
+      // let city = address[0].city;
+      // setCity(city);
     })();
   }, []);
 
