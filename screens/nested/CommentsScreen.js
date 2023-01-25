@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -7,39 +7,94 @@ import {
   Dimensions,
   TextInput,
   TouchableOpacity,
+  Keyboard,
+  TouchableWithoutFeedback,
+  FlatList,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
+import { addDoc, collection, doc, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase/config";
+import { CommentItem } from "../../components/CommentItem";
 
-export const CommentsScreen = () => {
+export const CommentsScreen = ({ route }) => {
   const [text, setText] = useState("");
-  const createPost = () => {};
+  const [comments, setComments] = useState([]);
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const { postId, photo } = route.params;
+  const keyboardHide = () => {
+    Keyboard.dismiss();
+    setIsShowKeyboard(false);
+  };
+  const createPost = () => {
+    sendComment();
+    setText("");
+    Keyboard.dismiss();
+    setIsShowKeyboard(false);
+  };
+  const sendComment = async () => {
+    const date = new Date().toLocaleDateString();
+    const time = new Date().toLocaleTimeString();
+    try {
+      const dbRef = doc(db, "posts", postId);
+      const commentUploadObject = {
+        comment: text,
+        date: date,
+        time: time,
+      };
+      await addDoc(collection(dbRef, "comments"), commentUploadObject);
+    } catch (error) {
+      console.log("Помилка при завантаженні коммента на сервер", error.message);
+    }
+  };
+
+  const fetchComments = async () => {
+    try {
+      const dbRef = doc(db, "posts", postId);
+      console.log(dbRef);
+      onSnapshot(collection(dbRef, "comments"), (docSnap) => {
+        const allCommSnap = docSnap.docs;
+        const allComm = allCommSnap.map((doc) => ({ ...doc.data() }));
+        setComments(allComm);
+      });
+      console.log("масив коментів", comments);
+    } catch (error) {
+      console.log("Помилка при отриманні комментарів з сервера", error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchComments();
+  }, []);
+
+  const renderItem = ({ item }) => {
+    return <CommentItem item={item} />;
+  };
 
   return (
-    <View style={styles.container}>
-      <Image style={styles.image} />
-      <View style={styles.commentContainer}>
-        <View style={styles.avatar}></View>
-        <View style={styles.commentBody}>
-          <Text style={styles.commentText}>
-            Really love your most recent photo. I’ve been trying to capture the
-            same thing for a few months and would love some tips!
-          </Text>
-          <View style={styles.commentInfo}>
-            <Text style={styles.commentDate}>09 июня, 2020 </Text>
-            <Text style={styles.commentTime}> 08:40</Text>
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <View style={styles.container}>
+        <Image style={styles.image} source={{ uri: photo }} />
+        <FlatList
+          data={comments}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+        />
+        <View style={styles.formContainer}>
+          <View style={styles.commentForm}>
+            <TextInput
+              style={styles.input}
+              placeholder="Комментировать"
+              onFocus={() => setIsShowKeyboard(true)}
+              onChangeText={setText}
+            />
+            <TouchableOpacity style={styles.sendBtn} onPress={createPost}>
+              <Feather name="arrow-up" size={24} color="white" />
+            </TouchableOpacity>
           </View>
         </View>
       </View>
-      <View style={styles.formContainer}>
-        <View style={styles.commentForm}>
-          <TextInput style={styles.input} placeholder="Комментировать" />
-          <TouchableOpacity style={styles.sendBtn} onPress={createPost}>
-            <Feather name="arrow-up" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -50,56 +105,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   image: {
+    marginBottom: 32,
     height: 240,
     width: Dimensions.get("window").width - 32,
     borderRadius: 8,
     backgroundColor: "#E8E8E8",
-  },
-  commentContainer: {
-    marginTop: 32,
-    display: "flex",
-    flexDirection: "row",
-  },
-  avatar: {
-    marginRight: 16,
-    backgroundColor: "#E8E8E8",
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-  },
-  commentBody: {
-    padding: 16,
-    marginBottom: 24,
-    borderBottomLeftRadius: 6,
-    borderBottomRightRadius: 6,
-    borderTopRightRadius: 6,
-    backgroundColor: "rgba(0, 0, 0, 0.03)",
-    maxWidth: Dimensions.get("window").width - 76,
-  },
-  commentText: {
-    fontSize: 13,
-    lineHeight: 18,
-    color: "#212121",
-    marginBottom: 8,
-  },
-  commentInfo: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-end",
-  },
-  commentDate: {
-    borderRightWidth: 1,
-    borderRightColor: "#BDBDBD",
-    paddingRight: 2,
-    fontSize: 10,
-    lineHeight: 12,
-    color: "#BDBDBD",
-  },
-  commentTime: {
-    paddingLeft: 2,
-    fontSize: 10,
-    lineHeight: 12,
-    color: "#BDBDBD",
   },
   formContainer: {
     flex: 1,

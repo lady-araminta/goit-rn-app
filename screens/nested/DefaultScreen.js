@@ -1,4 +1,4 @@
-import { collection, getDocs } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { StyleSheet, View, Text, FlatList } from "react-native";
 import { useSelector } from "react-redux";
@@ -11,13 +11,17 @@ export const DefaultScreen = ({ navigation }) => {
   const userEmail = useSelector(selectAuthEmail);
 
   const getAllPosts = async () => {
-    const querySnapshot = await getDocs(collection(db, "posts"));
-    const images = [];
-    querySnapshot.forEach((doc) => {
-      images.push({ ...doc.data(), id: doc.id });
-      setPosts(images);
-    });
-    return images;
+    const dbRef = collection(db, "posts");
+    onSnapshot(dbRef, (docSnap) =>
+      setPosts(docSnap.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+    );
+    // const querySnapshot = await getDocs(collection(db, "posts"));
+    // const images = [];
+    // querySnapshot.forEach((doc) => {
+    //   images.push({ ...doc.data(), id: doc.id });
+    //   setPosts(images);
+    // });
+    // return images;
   };
 
   useEffect(() => {

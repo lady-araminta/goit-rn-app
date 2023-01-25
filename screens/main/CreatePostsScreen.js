@@ -84,7 +84,12 @@ export const CreatePostScreen = ({ navigation }) => {
 
   const takePhoto = async () => {
     try {
-      let result = await ImagePicker.launchCameraAsync();
+      let result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [3, 4],
+        quality: 1,
+      });
       if (!result.canceled) {
         setPhoto(result.assets[0].uri);
         await MediaLibrary.createAssetAsync(result.assets[0].uri);
@@ -104,6 +109,8 @@ export const CreatePostScreen = ({ navigation }) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
     });
 
     if (!result.canceled) {
@@ -120,7 +127,6 @@ export const CreatePostScreen = ({ navigation }) => {
         place: place,
         description: description,
       };
-      console.log(uploadObject);
       const postRef = await addDoc(collection(db, "posts"), uploadObject);
     } catch (error) {
       console.log("Помилка в uploadPostToServer", error.message);
@@ -246,6 +252,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "flex-end",
+    marginBottom: 32,
   },
   trashBtn: {
     justifyContent: "center",

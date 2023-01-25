@@ -9,7 +9,12 @@ export const PostItem = ({ item, navigation }) => {
       <View style={styles.descriptionCont}>
         <TouchableOpacity
           style={styles.commentCont}
-          onPress={() => navigation.navigate("CommentsScreen")}
+          onPress={() =>
+            navigation.navigate("CommentsScreen", {
+              postId: item.id,
+              photo: item.photo,
+            })
+          }
         >
           <Feather
             name="message-circle"
@@ -31,9 +36,7 @@ export const PostItem = ({ item, navigation }) => {
             color="#BDBDBD"
             style={styles.locationIcon}
           />
-          <Text style={styles.location}>
-            {item.place ? item.place : item.city}
-          </Text>
+          <Text style={styles.location}>{item.place}</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -48,7 +48,7 @@ export const RegistrationScreen = ({ navigation }) => {
             <View style={styles.form}>
               <View style={styles.avatar}>
                 <TouchableOpacity style={styles.addAvatarIcon}>
-                  <Ionicons name="md-add" size={24} color="#BDBDBD" />
+                  <Ionicons name="md-add" size={24} color="#FF6C00" />
                 </TouchableOpacity>
               </View>
               <View style={styles.header}>

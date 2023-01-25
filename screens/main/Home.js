@@ -44,6 +44,7 @@ export const Home = ({ navigation }) => {
             </TouchableOpacity>
           ),
           headerTitleAlign: "center",
+          tabBarStyle: { display: "none" },
         }}
         name="CreatePostScreen"
         component={CreatePostScreen}
