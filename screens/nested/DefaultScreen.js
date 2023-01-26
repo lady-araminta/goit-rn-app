@@ -1,27 +1,26 @@
 import { collection, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { StyleSheet, View, Text, FlatList } from "react-native";
+import { StyleSheet, View, Text, FlatList, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { PostItem } from "../../components/PostItem";
 import { db } from "../../firebase/config";
-import { selectAuthEmail } from "../../redux/auth/authSelectors";
+import {
+  selectAuthEmail,
+  selectAvatar,
+  selectUserName,
+} from "../../redux/auth/authSelectors";
 
 export const DefaultScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
   const userEmail = useSelector(selectAuthEmail);
+  const userName = useSelector(selectUserName);
+  const avatarRef = useSelector(selectAvatar);
 
   const getAllPosts = async () => {
     const dbRef = collection(db, "posts");
     onSnapshot(dbRef, (docSnap) =>
       setPosts(docSnap.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
     );
-    // const querySnapshot = await getDocs(collection(db, "posts"));
-    // const images = [];
-    // querySnapshot.forEach((doc) => {
-    //   images.push({ ...doc.data(), id: doc.id });
-    //   setPosts(images);
-    // });
-    // return images;
   };
 
   useEffect(() => {
@@ -35,9 +34,11 @@ export const DefaultScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.userCont}>
-        <View style={styles.avatar}></View>
+        <View style={styles.avatar}>
+          <Image style={styles.avatarImg} source={{ uri: avatarRef }} />
+        </View>
         <View style={styles.nameCont}>
-          <Text style={styles.name}>Natali Romanova</Text>
+          <Text style={styles.name}>{userName}</Text>
           <Text style={styles.email}>{userEmail}</Text>
         </View>
       </View>
@@ -64,10 +65,16 @@ const styles = StyleSheet.create({
   avatar: {
     width: 60,
     height: 60,
-    borderWidth: 2,
-    borderColor: "#0000ff",
+    borderRadius: 30,
+    marginRight: 8,
+    backgroundColor: "#BDBDBD",
+  },
+  avatarImg: {
+    width: 60,
+    height: 60,
     borderRadius: 16,
     marginRight: 8,
+    backgroundColor: "#BDBDBD",
   },
   nameCont: {
     justifyContent: "center",

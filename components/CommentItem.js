@@ -1,11 +1,30 @@
-import { StyleSheet, View, Text, Dimensions } from "react-native";
+import { StyleSheet, View, Text, Dimensions, Image } from "react-native";
+import { useSelector } from "react-redux";
+import { selectUserId } from "../redux/auth/authSelectors";
 
 export const CommentItem = ({ item }) => {
-  console.log("прокинули в компонент", item);
+  const currentUserId = useSelector(selectUserId);
+  const currentUser = currentUserId === item.userId;
   return (
-    <View style={styles.commentContainer}>
-      <View style={styles.avatar}></View>
-      <View style={styles.commentBody}>
+    <View style={{ flexDirection: currentUser ? "row" : "row-reverse" }}>
+      {item.avatar ? (
+        <Image style={styles.avatar} source={{ uri: item.avatar }} />
+      ) : (
+        <View style={styles.avatar}></View>
+      )}
+      <View
+        style={{
+          ...styles.commentBody,
+          borderTopRightRadius: currentUser ? 6 : 0,
+          borderTopLeftRadius: currentUser ? 0 : 6,
+          marginLeft: currentUser ? 16 : 0,
+          marginRight: currentUser ? 0 : 16,
+        }}
+      >
+        <Text style={styles.commentAuthor}>
+          {currentUser ? "You" : item.userName}
+          {!item.userName && "Anonimous"}
+        </Text>
         <Text style={styles.commentText}>{item.comment}</Text>
         <View style={styles.commentInfo}>
           <Text style={styles.commentDate}>{item.date}</Text>
@@ -17,12 +36,7 @@ export const CommentItem = ({ item }) => {
 };
 
 const styles = StyleSheet.create({
-  commentContainer: {
-    // display: "flex",
-    flexDirection: "row",
-  },
   avatar: {
-    marginRight: 16,
     backgroundColor: "#E8E8E8",
     width: 28,
     height: 28,
@@ -33,9 +47,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     borderBottomLeftRadius: 6,
     borderBottomRightRadius: 6,
-    borderTopRightRadius: 6,
     backgroundColor: "rgba(0, 0, 0, 0.03)",
     maxWidth: Dimensions.get("window").width - 76,
+  },
+  commentAuthor: {
+    fontSize: 11,
+    fontWeight: "700",
   },
   commentText: {
     fontSize: 13,

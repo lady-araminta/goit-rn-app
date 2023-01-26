@@ -5,16 +5,17 @@ import { Feather } from "@expo/vector-icons";
 import { PostsScreen } from "./PostsScreen";
 import { CreatePostScreen } from "./CreatePostsScreen";
 import { ProfileScreen } from "./ProfileScreen";
-import { logout } from "../../redux/auth/authOperations";
-import { useDispatch } from "react-redux";
 
 const MainTab = createBottomTabNavigator();
 
 export const Home = ({ navigation }) => {
-  // const dispatch = useDispatch();
-  // const userLogout = dispatch(logout());
   return (
-    <MainTab.Navigator screenOptions={{ tabBarShowLabel: false }}>
+    <MainTab.Navigator
+      screenOptions={{
+        tabBarShowLabel: false,
+        tabBarStyle: { paddingTop: 9, paddingBottom: 10 },
+      }}
+    >
       <MainTab.Screen
         options={{
           headerShown: false,
@@ -29,8 +30,15 @@ export const Home = ({ navigation }) => {
         options={{
           title: "Создать публикацию",
           tabBarIcon: ({ focused, color, size }) => (
-            <Feather name="plus" size={24} color="rgba(33, 33, 33, 0.8)" />
+            <Feather name="plus" size={24} color="#fff" />
           ),
+          tabBarIconStyle: {
+            width: 70,
+            height: 30,
+            backgroundColor: "#ff6c00",
+            borderRadius: 20,
+          },
+          tabBarStyle: { marginVertical: 9 },
           headerLeft: () => (
             <TouchableOpacity
               style={{ marginLeft: 16 }}

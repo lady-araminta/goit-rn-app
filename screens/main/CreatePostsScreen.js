@@ -20,7 +20,11 @@ import { addDoc, collection } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { nanoid } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
-import { selectUserId } from "../../redux/auth/authSelectors";
+import {
+  selectAvatar,
+  selectUserId,
+  selectUserName,
+} from "../../redux/auth/authSelectors";
 
 export const CreatePostScreen = ({ navigation }) => {
   const [permission, requestPermission] = ImagePicker.useCameraPermissions();
@@ -32,6 +36,8 @@ export const CreatePostScreen = ({ navigation }) => {
   // const [city, setCity] = useState("");
   const [description, setDescription] = useState("");
   const userId = useSelector(selectUserId);
+  const userName = useSelector(selectUserName);
+  const avatar = useSelector(selectAvatar);
 
   useEffect(() => {
     (async () => {
@@ -46,9 +52,6 @@ export const CreatePostScreen = ({ navigation }) => {
         longitude: currentLocation.coords.longitude,
       };
       setLocation(coords);
-      // let address = await Location.reverseGeocodeAsync(coords);
-      // let city = address[0].city;
-      // setCity(city);
     })();
   }, []);
 
@@ -101,8 +104,8 @@ export const CreatePostScreen = ({ navigation }) => {
 
   const sendPhoto = () => {
     uploadPostToServer();
-    clearForm();
     navigation.navigate("DefaultScreen");
+    clearForm();
   };
 
   const pickImage = async () => {
@@ -126,6 +129,9 @@ export const CreatePostScreen = ({ navigation }) => {
         location: location,
         place: place,
         description: description,
+        userId: userId,
+        userName: userName,
+        avatar: avatar,
       };
       const postRef = await addDoc(collection(db, "posts"), uploadObject);
     } catch (error) {
@@ -165,8 +171,18 @@ export const CreatePostScreen = ({ navigation }) => {
             <Image source={{ uri: photo }} style={styles.photo} />
           </View>
         )}
-        <TouchableOpacity style={styles.button} onPress={takePhoto}>
-          <MaterialIcons name="camera-alt" size={24} color="#BDBDBD" />
+        <TouchableOpacity
+          style={{
+            ...styles.button,
+            backgroundColor: photo ? "rgba(255, 255, 255, 0.3)" : "#fff",
+          }}
+          onPress={takePhoto}
+        >
+          <MaterialIcons
+            name="camera-alt"
+            size={24}
+            color={photo ? "#fff" : "#BDBDBD"}
+          />
         </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={pickImage}>
@@ -176,19 +192,29 @@ export const CreatePostScreen = ({ navigation }) => {
 
       <TextInput
         style={{ ...styles.input, marginBottom: 16 }}
+        value={description}
         placeholder="Название"
         onChangeText={setDescription}
       />
       <View style={{ position: "relative" }}>
         <TextInput
           style={{ ...styles.input, paddingLeft: 28 }}
+          value={place}
           placeholder="Местность"
           onChangeText={setPlace}
         />
         <Feather name="map-pin" size={24} color="#BDBDBD" style={styles.icon} />
       </View>
-      <TouchableOpacity style={styles.inactiveBtn} onPress={sendPhoto}>
-        <Text style={styles.text}>Опубликовать</Text>
+      <TouchableOpacity
+        style={{
+          ...styles.sendBtn,
+          backgroundColor: photo ? "#ff6c00" : "#F6F6F6",
+        }}
+        onPress={sendPhoto}
+      >
+        <Text style={{ ...styles.text, color: photo ? "#fff" : "#BDBDBD" }}>
+          Опубликовать
+        </Text>
       </TouchableOpacity>
       <View style={styles.trashBtnCont}>
         <TouchableOpacity style={styles.trashBtn} onPress={clearForm}>
@@ -221,7 +247,6 @@ const styles = StyleSheet.create({
     height: 60,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
     borderRadius: 50,
   },
   text: {
@@ -234,13 +259,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#E8E8E8",
   },
-  inactiveBtn: {
+  sendBtn: {
     height: 50,
     marginTop: 32,
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 100,
-    backgroundColor: "#F6F6F6",
     justifyContent: "center",
     alignItems: "center",
   },

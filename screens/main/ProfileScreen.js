@@ -9,21 +9,21 @@ import {
   Platform,
   Dimensions,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-// import { signOut } from "firebase/auth";
-// import { auth } from "../../firebase/config";
-// import { useSelector } from "react-redux";
-// import { selectAuth } from "../../redux/auth/authSelectors";
-// import { logout } from "../../redux/auth/authOperations";
-// import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/auth/authOperations";
+import { selectAvatar, selectUserName } from "../../redux/auth/authSelectors";
 
 export const ProfileScreen = () => {
-  // const dispatch = useDispatch();
-  // const userLogout = () => {
-  //   dispatch(logout());
-  // };
+  const userName = useSelector(selectUserName);
+  const avatar = useSelector(selectAvatar);
+  const dispatch = useDispatch();
+  const signOut = () => {
+    dispatch(logout());
+  };
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <ImageBackground
@@ -35,16 +35,19 @@ export const ProfileScreen = () => {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
             <View style={styles.avatar}>
+              {avatar && (
+                <Image style={styles.uploadAvatar} source={{ uri: avatar }} />
+              )}
               <TouchableOpacity style={styles.deleteAvatarIcon}>
                 <Ionicons name="close-outline" size={24} color="#BDBDBD" />
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.logOutIcon}>
+            <TouchableOpacity style={styles.logOutIcon} onPress={signOut}>
               <Feather name="log-out" size={24} color="#BDBDBD" />
             </TouchableOpacity>
             <View style={styles.header}>
-              <Text style={styles.headerText}>Natali Romanova</Text>
+              <Text style={styles.headerText}>{userName}</Text>
             </View>
           </KeyboardAvoidingView>
         </View>
@@ -76,6 +79,12 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     backgroundColor: "#f6f6f6",
+    borderRadius: 16,
+  },
+  uploadAvatar: {
+    position: "absolute",
+    width: 120,
+    height: 120,
     borderRadius: 16,
   },
   deleteAvatarIcon: {

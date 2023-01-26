@@ -16,11 +16,20 @@ import { useState } from "react";
 import { addDoc, collection, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { CommentItem } from "../../components/CommentItem";
+import { useSelector } from "react-redux";
+import {
+  selectAvatar,
+  selectUserId,
+  selectUserName,
+} from "../../redux/auth/authSelectors";
 
 export const CommentsScreen = ({ route }) => {
   const [text, setText] = useState("");
   const [comments, setComments] = useState([]);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const userId = useSelector(selectUserId);
+  const userName = useSelector(selectUserName);
+  const avatar = useSelector(selectAvatar);
   const { postId, photo } = route.params;
   const keyboardHide = () => {
     Keyboard.dismiss();
@@ -41,6 +50,9 @@ export const CommentsScreen = ({ route }) => {
         comment: text,
         date: date,
         time: time,
+        userId: userId,
+        userName: userName,
+        avatar: avatar,
       };
       await addDoc(collection(dbRef, "comments"), commentUploadObject);
     } catch (error) {
@@ -51,13 +63,11 @@ export const CommentsScreen = ({ route }) => {
   const fetchComments = async () => {
     try {
       const dbRef = doc(db, "posts", postId);
-      console.log(dbRef);
       onSnapshot(collection(dbRef, "comments"), (docSnap) => {
         const allCommSnap = docSnap.docs;
         const allComm = allCommSnap.map((doc) => ({ ...doc.data() }));
         setComments(allComm);
       });
-      console.log("масив коментів", comments);
     } catch (error) {
       console.log("Помилка при отриманні комментарів з сервера", error.message);
     }
@@ -85,6 +95,7 @@ export const CommentsScreen = ({ route }) => {
             <TextInput
               style={styles.input}
               placeholder="Комментировать"
+              value={text}
               onFocus={() => setIsShowKeyboard(true)}
               onChangeText={setText}
             />

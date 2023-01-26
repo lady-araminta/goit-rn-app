@@ -11,29 +11,77 @@ import {
   KeyboardAvoidingView,
   Dimensions,
   Platform,
+  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
 import { register } from "../../redux/auth/authOperations";
 import { useDispatch } from "react-redux";
+import * as ImagePicker from "expo-image-picker";
+import { nanoid } from "@reduxjs/toolkit";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { storage } from "../../firebase/config";
 
 export const RegistrationScreen = ({ navigation }) => {
-  const [login, setLogin] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [uploadAvatar, setUploadAvatar] = useState("");
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {}, [dispatch]);
 
-  const submitReg = () => {
-    const userObject = { login, email, password };
-    dispatch(register(userObject));
-    setIsShowKeyboard(false);
-    Keyboard.dismiss();
-    setLogin("");
-    setEmail("");
-    setPassword("");
+  const uploadAvatarFromGallery = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        quality: 1,
+      });
+      if (!result.canceled) {
+        setUploadAvatar(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.log("Помилка при завантаженні аватара з галереї", error.message);
+    }
+  };
+
+  const uploadAvatarToServer = async () => {
+    try {
+      const response = await fetch(uploadAvatar);
+      const file = await response.blob();
+      const avatarId = nanoid();
+      const storageRef = await ref(storage, `avatars/${avatarId}`);
+      await uploadBytesResumable(storageRef, file);
+      const fileRef = ref(storageRef);
+      const avatarURL = await getDownloadURL(fileRef);
+      return avatarURL;
+    } catch (error) {
+      console.log("Помилка при завантаженні аватара на сервер", error.message);
+    }
+  };
+
+  const submitReg = async () => {
+    try {
+      const avatarRef = await uploadAvatarToServer();
+      console.log(avatarRef);
+      const userObject = {
+        name: name,
+        email: email,
+        password: password,
+        avatar: avatarRef,
+      };
+      console.log(userObject);
+      dispatch(register(userObject));
+      setIsShowKeyboard(false);
+      Keyboard.dismiss();
+      setName("");
+      setEmail("");
+      setPassword("");
+      setUploadAvatar("");
+    } catch (error) {
+      console.log("Помилка при сабміті форми", error.message);
+    }
   };
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -47,9 +95,29 @@ export const RegistrationScreen = ({ navigation }) => {
           >
             <View style={styles.form}>
               <View style={styles.avatar}>
-                <TouchableOpacity style={styles.addAvatarIcon}>
-                  <Ionicons name="md-add" size={24} color="#FF6C00" />
-                </TouchableOpacity>
+                {uploadAvatar && (
+                  <Image
+                    style={styles.uploadAvatar}
+                    source={{ uri: uploadAvatar }}
+                  />
+                )}
+                {uploadAvatar ? (
+                  <TouchableOpacity
+                    style={styles.addAvatarIcon}
+                    onPress={() => {
+                      setUploadAvatar("");
+                    }}
+                  >
+                    <Ionicons name="close-outline" size={24} color="#BDBDBD" />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.addAvatarIcon}
+                    onPress={uploadAvatarFromGallery}
+                  >
+                    <Ionicons name="md-add" size={24} color="#FF6C00" />
+                  </TouchableOpacity>
+                )}
               </View>
               <View style={styles.header}>
                 <Text style={styles.headerTitle}>Регистрация</Text>
@@ -57,16 +125,16 @@ export const RegistrationScreen = ({ navigation }) => {
               <TextInput
                 style={styles.input}
                 placeholder="Логин"
-                value={login}
+                value={name}
                 onFocus={() => setIsShowKeyboard(true)}
-                onChangeText={(value) => setLogin(value)}
+                onChangeText={setName}
               />
               <TextInput
                 style={styles.input}
                 placeholder="Адрес электронной почты"
                 value={email}
                 onFocus={() => setIsShowKeyboard(true)}
-                onChangeText={(value) => setEmail(value)}
+                onChangeText={setEmail}
               />
               <TextInput
                 style={styles.input}
@@ -74,7 +142,7 @@ export const RegistrationScreen = ({ navigation }) => {
                 secureTextEntry={true}
                 value={password}
                 onFocus={() => setIsShowKeyboard(true)}
-                onChangeText={(value) => setPassword(value)}
+                onChangeText={setPassword}
               />
               <TouchableOpacity
                 style={styles.button}
@@ -162,6 +230,12 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     backgroundColor: "#f6f6f6",
+    borderRadius: 16,
+  },
+  uploadAvatar: {
+    position: "absolute",
+    width: 120,
+    height: 120,
     borderRadius: 16,
   },
   addAvatarIcon: {
