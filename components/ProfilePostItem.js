@@ -1,10 +1,25 @@
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+import { deleteDoc, doc } from "firebase/firestore";
+import { db } from "../firebase/config";
 
 export const ProfilePostItem = ({ item, navigation }) => {
+  const deletePost = async () => {
+    try {
+      const postId = item.id;
+      const dbRef = doc(db, "posts", postId);
+      await deleteDoc(dbRef);
+    } catch (error) {
+      console.log("Помилка видалення посту", error.message);
+    }
+  };
   return (
     <View style={styles.itemContainer}>
       <Image source={{ uri: item.photo }} style={styles.item} />
+      <TouchableOpacity style={styles.trashBtn} onPress={deletePost}>
+        <AntDesign name="delete" size={24} color="#BDBDBD" />
+      </TouchableOpacity>
       <Text style={styles.title}>{item.description}</Text>
       <View style={styles.descriptionCont}>
         <View style={{ display: "flex", flexDirection: "row" }}>
@@ -56,6 +71,7 @@ export const ProfilePostItem = ({ item, navigation }) => {
 
 const styles = StyleSheet.create({
   itemContainer: {
+    position: "relative",
     marginHorizontal: 16,
     marginBottom: 32,
   },
@@ -115,5 +131,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 18.75,
     color: "#212121",
+  },
+  trashBtn: {
+    position: "absolute",
+    top: 8,
+    right: 8,
   },
 });
