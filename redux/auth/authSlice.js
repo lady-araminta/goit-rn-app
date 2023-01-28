@@ -6,6 +6,7 @@ const state = {
   email: null,
   avatar: null,
   stateChange: false,
+  error: null,
 };
 
 export const authSlice = createSlice({
@@ -24,5 +25,9 @@ export const authSlice = createSlice({
       stateChange: payload.stateChange,
     }),
     authSignOut: () => state,
+    authError: (state, { payload }) => ({
+      ...state,
+      error: payload.error,
+    }),
   },
 });

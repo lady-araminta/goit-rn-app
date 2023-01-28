@@ -133,6 +133,7 @@ export const CreatePostScreen = ({ navigation }) => {
         userId: userId,
         userName: userName,
         avatar: avatar,
+        likes: 0,
       };
       const postRef = await addDoc(collection(db, "posts"), uploadObject);
       Alert.alert("Photo is added");

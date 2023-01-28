@@ -9,7 +9,8 @@ import { Alert } from "react-native";
 import { auth } from "../../firebase/config";
 import { authSlice } from "./authSlice";
 
-const { updateUserProfile, authStateChange, authSignOut } = authSlice.actions;
+const { updateUserProfile, authStateChange, authSignOut, authError } =
+  authSlice.actions;
 
 export const register =
   ({ email, password, name, avatar }) =>
@@ -32,7 +33,7 @@ export const register =
       Alert.alert(`Welcome, ${name}`);
     } catch (error) {
       Alert.alert("Error!");
-      console.log(error.message);
+      dispatch(authError(error.message));
     }
   };
 export const login =
@@ -43,7 +44,7 @@ export const login =
       Alert.alert("Welcome!");
     } catch (error) {
       Alert.alert("Error!");
-      console.log(error.message);
+      dispatch(authError(error.message));
     }
   };
 export const logout = () => async (dispatch) => {
@@ -53,7 +54,7 @@ export const logout = () => async (dispatch) => {
     Alert.alert("Logout is successful");
   } catch (error) {
     Alert.alert("Error!");
-    console.log(error.message);
+    dispatch(authError(error.message));
   }
 };
 

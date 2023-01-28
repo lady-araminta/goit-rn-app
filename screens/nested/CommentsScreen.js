@@ -12,7 +12,13 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
-import { addDoc, collection, doc, onSnapshot } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { CommentItem } from "../../components/CommentItem";
 import { useSelector } from "react-redux";
@@ -53,6 +59,7 @@ export const CommentsScreen = ({ route }) => {
         userName: userName,
         avatar: avatar,
       };
+      await updateDoc(dbRef, { comments: comments.length + 1 });
       await addDoc(collection(dbRef, "comments"), commentUploadObject);
     } catch (error) {
       console.log("Помилка при завантаженні коммента на сервер", error.message);

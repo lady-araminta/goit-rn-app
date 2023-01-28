@@ -30,7 +30,7 @@ export const CommentItem = ({ item, isShowKeyboard }) => {
           {currentUser ? "You" : item.userName}
           {!item.userName && "Anonimous"}
         </Text>
-        <Text style={styles.commentText}>{item.comment}</Text>
+        <Text style={styles.commentText}>{item.comment || item.text}</Text>
         <View style={styles.commentInfo}>
           <Text style={styles.commentDate}>{item.date}</Text>
           <Text style={styles.commentTime}> {item.time} </Text>

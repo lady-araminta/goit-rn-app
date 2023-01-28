@@ -26,6 +26,7 @@ import { db } from "../../firebase/config";
 import { useState } from "react";
 import { useEffect } from "react";
 import { PostItem } from "../../components/PostItem";
+import { ProfilePostItem } from "../../components/ProfilePostItem";
 
 export const ProfileScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
@@ -49,7 +50,7 @@ export const ProfileScreen = ({ navigation }) => {
   }, []);
 
   const renderItem = ({ item }) => {
-    return <PostItem item={item} navigation={navigation} />;
+    return <ProfilePostItem item={item} navigation={navigation} />;
   };
 
   return (
