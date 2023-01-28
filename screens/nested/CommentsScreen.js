@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import {
   StyleSheet,
   View,
-  Text,
   Image,
   Dimensions,
   TextInput,
@@ -47,7 +46,7 @@ export const CommentsScreen = ({ route }) => {
     try {
       const dbRef = doc(db, "posts", postId);
       const commentUploadObject = {
-        comment: text,
+        text: text,
         date: date,
         time: time,
         userId: userId,
@@ -78,7 +77,7 @@ export const CommentsScreen = ({ route }) => {
   }, []);
 
   const renderItem = ({ item }) => {
-    return <CommentItem item={item} />;
+    return <CommentItem item={item} isShowKeyboard={isShowKeyboard} />;
   };
 
   return (
@@ -87,7 +86,7 @@ export const CommentsScreen = ({ route }) => {
         <Image style={styles.image} source={{ uri: photo }} />
         <FlatList
           data={comments}
-          keyExtractor={(item) => item.id}
+          keyExtractor={comments.id}
           renderItem={renderItem}
         />
         <View style={styles.formContainer}>

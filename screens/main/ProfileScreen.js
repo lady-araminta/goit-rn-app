@@ -10,20 +10,48 @@ import {
   Dimensions,
   TouchableOpacity,
   Image,
+  FlatList,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/auth/authOperations";
-import { selectAvatar, selectUserName } from "../../redux/auth/authSelectors";
+import {
+  selectAvatar,
+  selectUserId,
+  selectUserName,
+} from "../../redux/auth/authSelectors";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { db } from "../../firebase/config";
+import { useState } from "react";
+import { useEffect } from "react";
+import { PostItem } from "../../components/PostItem";
 
-export const ProfileScreen = () => {
+export const ProfileScreen = ({ navigation }) => {
+  const [posts, setPosts] = useState([]);
+  const currentUser = useSelector(selectUserId);
   const userName = useSelector(selectUserName);
   const avatar = useSelector(selectAvatar);
   const dispatch = useDispatch();
   const signOut = () => {
     dispatch(logout());
   };
+  const fetchPostsByCurrentUser = () => {
+    const dbRef = collection(db, "posts");
+    const searchQuery = query(dbRef, where("userId", "==", currentUser));
+    onSnapshot(searchQuery, (docSnap) =>
+      setPosts(docSnap.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+    );
+  };
+
+  useEffect(() => {
+    fetchPostsByCurrentUser();
+  }, []);
+
+  const renderItem = ({ item }) => {
+    return <PostItem item={item} navigation={navigation} />;
+  };
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <ImageBackground
@@ -49,6 +77,23 @@ export const ProfileScreen = () => {
             <View style={styles.header}>
               <Text style={styles.headerText}>{userName}</Text>
             </View>
+            {posts.length >= 1 ? (
+              <FlatList
+                data={posts}
+                keyExtractor={posts.id}
+                renderItem={renderItem}
+              />
+            ) : (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("CreatePostScreen");
+                }}
+              >
+                <Text style={styles.bodyText}>
+                  Додайте перший пост до вашої колекції!
+                </Text>
+              </TouchableOpacity>
+            )}
           </KeyboardAvoidingView>
         </View>
       </ImageBackground>
@@ -62,6 +107,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
+    marginTop: 350,
+    paddingBottom: 145,
   },
   image: {
     flex: 1,
@@ -106,10 +153,15 @@ const styles = StyleSheet.create({
   header: {
     paddingTop: 32,
     alignItems: "center",
+    marginBottom: 32,
   },
   headerText: {
     color: "#212121",
     fontSize: 30,
     lineHeight: 35,
+  },
+  bodyText: {
+    textAlign: "center",
+    marginBottom: 50,
   },
 });

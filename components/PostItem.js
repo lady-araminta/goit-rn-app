@@ -2,7 +2,6 @@ import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 export const PostItem = ({ item, navigation }) => {
-  console.log(item);
   return (
     <View style={styles.itemContainer}>
       <Image source={{ uri: item.photo }} style={styles.item} />

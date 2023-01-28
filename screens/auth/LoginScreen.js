@@ -63,7 +63,7 @@ export const LoginScreen = ({ navigation }) => {
               <View>
                 <TouchableOpacity
                   style={styles.button}
-                  activeOpacity={0.9}
+                  activeOpacity={0.5}
                   onPress={submitLog}
                 >
                   <Text style={styles.buttonText}>Войти</Text>

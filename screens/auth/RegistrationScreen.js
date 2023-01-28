@@ -71,7 +71,6 @@ export const RegistrationScreen = ({ navigation }) => {
         password: password,
         avatar: avatarRef,
       };
-      console.log(userObject);
       dispatch(register(userObject));
       setIsShowKeyboard(false);
       Keyboard.dismiss();

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
   View,
+  Alert,
 } from "react-native";
 import * as MediaLibrary from "expo-media-library";
 import * as ImagePicker from "expo-image-picker";
@@ -134,6 +135,7 @@ export const CreatePostScreen = ({ navigation }) => {
         avatar: avatar,
       };
       const postRef = await addDoc(collection(db, "posts"), uploadObject);
+      Alert.alert("Photo is added");
     } catch (error) {
       console.log("Помилка в uploadPostToServer", error.message);
     }

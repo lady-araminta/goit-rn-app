@@ -2,11 +2,16 @@ import { StyleSheet, View, Text, Dimensions, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { selectUserId } from "../redux/auth/authSelectors";
 
-export const CommentItem = ({ item }) => {
+export const CommentItem = ({ item, isShowKeyboard }) => {
   const currentUserId = useSelector(selectUserId);
   const currentUser = currentUserId === item.userId;
   return (
-    <View style={{ flexDirection: currentUser ? "row" : "row-reverse" }}>
+    <View
+      style={{
+        flexDirection: currentUser ? "row" : "row-reverse",
+        display: isShowKeyboard ? "none" : "flex",
+      }}
+    >
       {item.avatar ? (
         <Image style={styles.avatar} source={{ uri: item.avatar }} />
       ) : (
