@@ -25,7 +25,6 @@ import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { useState } from "react";
 import { useEffect } from "react";
-import { PostItem } from "../../components/PostItem";
 import { ProfilePostItem } from "../../components/ProfilePostItem";
 
 export const ProfileScreen = ({ navigation }) => {
@@ -67,9 +66,9 @@ export const ProfileScreen = ({ navigation }) => {
               {avatar && (
                 <Image style={styles.uploadAvatar} source={{ uri: avatar }} />
               )}
-              <TouchableOpacity style={styles.deleteAvatarIcon}>
+              {/* <TouchableOpacity style={styles.deleteAvatarIcon}>
                 <Ionicons name="close-outline" size={24} color="#BDBDBD" />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
 
             <TouchableOpacity style={styles.logOutIcon} onPress={signOut}>
@@ -135,17 +134,17 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 16,
   },
-  deleteAvatarIcon: {
-    position: "absolute",
-    top: 80,
-    left: 108,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    width: 25,
-    height: 25,
-    borderRadius: 25,
-  },
+  // deleteAvatarIcon: {
+  //   position: "absolute",
+  //   top: 80,
+  //   left: 108,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   backgroundColor: "#fff",
+  //   width: 25,
+  //   height: 25,
+  //   borderRadius: 25,
+  // },
   logOutIcon: {
     alignItems: "flex-end",
     marginRight: 16,

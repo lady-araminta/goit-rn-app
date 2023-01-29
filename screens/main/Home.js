@@ -28,7 +28,7 @@ export const Home = ({ navigation }) => {
       />
       <MainTab.Screen
         options={{
-          title: "Создать публикацию",
+          title: "Створити публікацію",
           tabBarIcon: ({ focused, color, size }) => (
             <Feather name="plus" size={24} color="#fff" />
           ),

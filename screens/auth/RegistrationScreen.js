@@ -119,18 +119,18 @@ export const RegistrationScreen = ({ navigation }) => {
                 )}
               </View>
               <View style={styles.header}>
-                <Text style={styles.headerTitle}>Регистрация</Text>
+                <Text style={styles.headerTitle}>Реєстрація</Text>
               </View>
               <TextInput
                 style={styles.input}
-                placeholder="Логин"
+                placeholder="Логін"
                 value={name}
                 onFocus={() => setIsShowKeyboard(true)}
                 onChangeText={setName}
               />
               <TextInput
                 style={styles.input}
-                placeholder="Адрес электронной почты"
+                placeholder="Електронна пошта"
                 value={email}
                 onFocus={() => setIsShowKeyboard(true)}
                 onChangeText={setEmail}
@@ -148,13 +148,13 @@ export const RegistrationScreen = ({ navigation }) => {
                 activeOpacity={0.9}
                 onPress={submitReg}
               >
-                <Text style={styles.buttonText}>Зарегистрироваться</Text>
+                <Text style={styles.buttonText}>Зареєструватись</Text>
               </TouchableOpacity>
             </View>
             <TouchableOpacity
               onPress={() => navigation.navigate("LoginScreen")}
             >
-              <Text style={styles.formText}>Уже есть аккаунт? Войти</Text>
+              <Text style={styles.formText}>Вже є акаунт? Увійти</Text>
             </TouchableOpacity>
           </KeyboardAvoidingView>
         </View>

@@ -100,7 +100,7 @@ export const CommentsScreen = ({ route }) => {
           <View style={styles.commentForm}>
             <TextInput
               style={styles.input}
-              placeholder="Комментировать"
+              placeholder="Додати коментар"
               value={text}
               onFocus={() => setIsShowKeyboard(true)}
               onChangeText={setText}

@@ -21,7 +21,7 @@ export const PostsScreen = () => {
         name="DefaultScreen"
         component={DefaultScreen}
         options={{
-          title: "Публикации",
+          title: "Публікації",
           headerTitleAlign: "center",
           headerRight: () => (
             <TouchableOpacity style={{ marginRight: 16 }} onPress={signOut}>
@@ -34,7 +34,7 @@ export const PostsScreen = () => {
         name="CommentsScreen"
         component={CommentsScreen}
         options={{
-          title: "Комментарии",
+          title: "Коментарі",
         }}
       />
       <NestedScreen.Screen name="MapScreen" component={MapScreen} />

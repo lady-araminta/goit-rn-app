@@ -34,7 +34,6 @@ export const CreatePostScreen = ({ navigation }) => {
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState(null);
   const [place, setPlace] = useState("");
-  // const [city, setCity] = useState("");
   const [description, setDescription] = useState("");
   const userId = useSelector(selectUserId);
   const userName = useSelector(selectUserName);
@@ -189,21 +188,21 @@ export const CreatePostScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={pickImage}>
-        {photo && <Text style={styles.text}>Редактировать фото</Text>}
-        {!photo && <Text style={styles.text}>Загрузить фото</Text>}
+        {photo && <Text style={styles.text}>Редагувати фото</Text>}
+        {!photo && <Text style={styles.text}>Завантажити фото</Text>}
       </TouchableOpacity>
 
       <TextInput
         style={{ ...styles.input, marginBottom: 16 }}
         value={description}
-        placeholder="Название"
+        placeholder="Назва"
         onChangeText={setDescription}
       />
       <View style={{ position: "relative" }}>
         <TextInput
           style={{ ...styles.input, paddingLeft: 28 }}
           value={place}
-          placeholder="Местность"
+          placeholder="Місце"
           onChangeText={setPlace}
         />
         <Feather name="map-pin" size={24} color="#BDBDBD" style={styles.icon} />
@@ -216,7 +215,7 @@ export const CreatePostScreen = ({ navigation }) => {
         onPress={sendPhoto}
       >
         <Text style={{ ...styles.text, color: photo ? "#fff" : "#BDBDBD" }}>
-          Опубликовать
+          Опублікувати
         </Text>
       </TouchableOpacity>
       <View style={styles.trashBtnCont}>

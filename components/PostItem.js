@@ -21,11 +21,9 @@ export const PostItem = ({ item, navigation }) => {
       if (!isLike) {
         setIsLike(true);
         likeIncrement();
-        Alert.alert("Like!");
       } else {
         setIsLike(false);
         likeDecrement();
-        Alert.alert("Unlike!");
       }
     } else {
       Alert.alert("It is your post!");
