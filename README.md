@@ -2,4 +2,4 @@
 
 exp://exp.host/@araminta/goit-rn-app
 
-[product-screenshot]: (https://github.com/lady-araminta/goit-rn-app/blob/master/assets/images/screen.jpg)
+![app-screenshot](https://github.com/lady-araminta/goit-rn-app/blob/master/assets/images/screen.jpg)
